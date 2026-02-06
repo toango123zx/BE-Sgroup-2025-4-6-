@@ -15,7 +15,7 @@ import {
 } from './dtos';
 import { UsersController } from './users.controller';
 
-import { autoBindUtil, validateRequestMiddleware } from '@/common';
+import { autoBindUtil, RolesEnum, validateRequestMiddleware } from '@/common';
 import authMiddleware from '@/common/middlewares/auth.middleware';
 import { createApiResponse } from '@/swagger/openAPIResponseBuilders';
 
@@ -37,6 +37,7 @@ router.get(
 	'/',
 	authMiddleware.verifyAccessToken,
 	validateRequestMiddleware(getUsersRequestValidationSchema),
+	authMiddleware.verifyPermission(RolesEnum.ADMIN),
 	usersController.getUsers,
 );
 
@@ -88,5 +89,53 @@ router.patch(
 	validateRequestMiddleware(updateMyPasswordRequestValidationSchema),
 	usersController.updateMyPassword,
 );
+
+usersRegistry.registerPath({
+	method: 'post',
+	path: '/users/bills',
+	tags: ['Users'],
+	responses: createApiResponse(getUserResponseDtoSchema, 'Success', StatusCodes.OK),
+});
+router.post('/bills', usersController.createBill);
+
+usersRegistry.registerPath({
+	method: 'post',
+	path: '/users/redis',
+	tags: ['Users'],
+	responses: createApiResponse(getUserResponseDtoSchema, 'Success', StatusCodes.OK),
+});
+router.post('/redis', usersController.testAddKeyRedis);
+
+usersRegistry.registerPath({
+	method: 'post',
+	path: '/users/redis/set',
+	tags: ['Users'],
+	responses: createApiResponse(getUserResponseDtoSchema, 'Success', StatusCodes.OK),
+});
+router.post('/redis/set', usersController.testSetKeyRedis);
+
+usersRegistry.registerPath({
+	method: 'post',
+	path: '/users/redis/get',
+	tags: ['Users'],
+	responses: createApiResponse(getUserResponseDtoSchema, 'Success', StatusCodes.OK),
+});
+router.post('/redis/get', usersController.testGetKeyRedis);
+
+usersRegistry.registerPath({
+	method: 'post',
+	path: '/users/redis/publish',
+	tags: ['Users'],
+	responses: createApiResponse(getUserResponseDtoSchema, 'Success', StatusCodes.OK),
+});
+router.post('/redis/publish', usersController.testRedisPublish);
+
+usersRegistry.registerPath({
+	method: 'post',
+	path: '/users/redis/subscribe',
+	tags: ['Users'],
+	responses: createApiResponse(getUserResponseDtoSchema, 'Success', StatusCodes.OK),
+});
+router.post('/redis/subscribe', usersController.testRedisSubscribe);
 
 export const usersRouter = router;

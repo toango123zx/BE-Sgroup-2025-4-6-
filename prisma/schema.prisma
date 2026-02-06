@@ -38,6 +38,33 @@ enum UserStatusEnum {
     LOCKED @map("locked")
 }
 
+enum RoleStatusEnum {
+    ACTIVE   @map("active")
+    INACTIVE @map("inactive")
+}
+
+enum PermissionStatusEnum {
+    ACTIVE   @map("active")
+    INACTIVE @map("inactive")
+}
+
+enum PermissionNameEnum {
+    CREATE_USER @map("CREATE_USER")
+    UPDATE_USER @map("UPDATE_USER")
+    DELETE_USER @map("DELETE_USER")
+    VIEW_USER   @map("VIEW_USER")
+}
+
+enum ProjectsStatusEnum {
+    ACTIVE   @map("active")
+    INACTIVE @map("inactive")
+}
+
+enum ProjectMembersStatusEnum {
+    ACTIVE   @map("active")
+    INACTIVE @map("inactive")
+}
+
 model users {
     id        String         @id @default(uuid())
     email     String         @unique
@@ -52,7 +79,7 @@ model users {
     createdAt DateTime       @default(now())
     // @DtoCreateHidden
     // @DtoUpdateHidden
-    updatedAt DateTime       @updatedAt
+    updatedAt DateTime       @updatedAt @map("updated_at")
     // @DtoCreateHidden
     // @DtoUpdateHidden
     deletedAt DateTime?
@@ -61,6 +88,8 @@ model users {
     socialAccounts socialAccounts?
     tokens         tokens[]
     otps           otps?
+    usersRoles     usersRoles[]
+    projectMembers projectMembers[]
 
     @@map("users")
 }
@@ -103,4 +132,86 @@ model otps {
     expiresAt DateTime @map("expires_at")
 
     @@map("Otps")
+}
+
+model roles {
+    id          String         @id @default(uuid())
+    name        String         @unique @map("role_name")
+    description String
+    createdAt   DateTime       @default(now()) @map("created_at")
+    updatedAt   DateTime       @updatedAt @map("updated_at")
+    deletedAt   DateTime?      @map("deleted_at")
+    status      RoleStatusEnum @default(ACTIVE)
+
+    userRoles       usersRoles[]
+    rolePermissions rolesPermissions[]
+    projectMembers  projectMembers[]
+
+    @@map("Roles")
+}
+
+model usersRoles {
+    id     String @id @default(uuid())
+    userId String @map("user_id")
+    roleId String @map("role_id")
+    user   users  @relation(fields: [userId], references: [id])
+    role   roles  @relation(fields: [roleId], references: [id])
+
+    @@unique([userId, roleId])
+    @@map("Users_Roles")
+}
+
+model permissions {
+    id          String               @id @default(uuid())
+    name        String               @unique @map("permission_name")
+    description String
+    createdAt   DateTime             @default(now()) @map("created_at")
+    updatedAt   DateTime             @updatedAt @map("updated_at")
+    deletedAt   DateTime?            @map("deleted_at")
+    status      PermissionStatusEnum @default(ACTIVE)
+
+    rolesPermissions rolesPermissions[]
+
+    @@map("Permissions")
+}
+
+model rolesPermissions {
+    id           String      @id @default(uuid())
+    roleId       String      @map("role_id")
+    permissionId String      @map("permission_id")
+    role         roles       @relation(fields: [roleId], references: [id])
+    permission   permissions @relation(fields: [permissionId], references: [id])
+
+    @@unique([roleId, permissionId])
+    @@map("Roles_Permissions")
+}
+
+model projects {
+    id          String             @id @default(uuid())
+    name        String
+    description String?
+    createdAt   DateTime           @default(now()) @map("created_at")
+    updatedAt   DateTime           @updatedAt @map("updated_at")
+    deletedAt   DateTime?          @map("deleted_at")
+    status      ProjectsStatusEnum @default(ACTIVE)
+
+    projectMembers projectMembers[]
+
+    @@map("Projects")
+}
+
+model projectMembers {
+    id        String                   @id @default(uuid())
+    projectId String                   @map("project_id")
+    project   projects                 @relation(fields: [projectId], references: [id])
+    userId    String                   @map("user_id")
+    user      users                    @relation(fields: [userId], references: [id])
+    roleId    String                   @map("role_id")
+    role      roles                    @relation(fields: [roleId], references: [id])
+    createdAt DateTime                 @default(now()) @map("created_at")
+    updatedAt DateTime                 @updatedAt @map("updated_at")
+    deletedAt DateTime?                @map("deleted_at")
+    status    ProjectMembersStatusEnum @default(ACTIVE)
+
+    @@map("Project_Members")
 }

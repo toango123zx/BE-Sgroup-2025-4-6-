@@ -79,4 +79,62 @@ export class UsersController {
 		}
 		return new HttpResponseDto().success<GetUserResponseDto>(result);
 	}
+
+	async createBill(req: Request): Promise<Response> {
+		const result = await this.usersService.createBill();
+		if (result instanceof Exception) {
+			return new HttpResponseDto().exception(result);
+		}
+		return new HttpResponseDto().success<string>(result);
+	}
+
+	async testAddKeyRedis(req: Request): Promise<Response> {
+		// const a =  new NotFoundException();
+		// return new HttpResponseDto().exception(a);
+		const result = await this.usersService.testAddKeyRedis();
+		if (result instanceof Exception) {
+			return new HttpResponseDto().exception(result);
+		}
+		return new HttpResponseDto().success<string>(result);
+	}
+
+	async testSetKeyRedis(req: Request): Promise<Response> {
+		// const a =  new NotFoundException();
+		// return new HttpResponseDto().exception(a);
+		const result = await this.usersService.testSetKeyRedis();
+		if (result instanceof Exception) {
+			return new HttpResponseDto().exception(result);
+		}
+		return new HttpResponseDto().success<string>(result);
+	}
+
+	async testGetKeyRedis(req: Request): Promise<Response> {
+		// const a =  new NotFoundException();
+		// return new HttpResponseDto().exception(a);
+		const result = await this.usersService.testGetKeyRedis();
+		if (result instanceof Exception) {
+			return new HttpResponseDto().exception(result);
+		}
+		return new HttpResponseDto().success<string>(result);
+	}
+
+	async testRedisPublish(req: Request): Promise<Response> {
+		// const a =  new NotFoundException();
+		// return new HttpResponseDto().exception(a);
+		const result = await this.usersService.testRedisPublish();
+		if (result instanceof Exception) {
+			return new HttpResponseDto().exception(result);
+		}
+		return new HttpResponseDto().success<string>(result);
+	}
+
+	async testRedisSubscribe(req: Request): Promise<Response> {
+		// const a =  new NotFoundException();
+		// return new HttpResponseDto().exception(a);
+		const result = await this.usersService.testRedisSubscribe();
+		if (result instanceof Exception) {
+			return new HttpResponseDto().exception(result);
+		}
+		return new HttpResponseDto().success<string>(result);
+	}
 }

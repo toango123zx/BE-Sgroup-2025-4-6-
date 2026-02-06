@@ -19,7 +19,10 @@ import { jwtConfig } from '@/configs';
 import { UserInformationDto } from '@/modules/users/dtos';
 
 class AuthMiddleware extends BaseAutoBindMiddleware {
-	constructor(private readonly userRepository = new UsersRepository()) {
+	constructor(
+		private readonly userRepository = new UsersRepository(),
+		private readonly permissionRepository = new UsersRepository(),
+	) {
 		super();
 	}
 
@@ -132,6 +135,40 @@ class AuthMiddleware extends BaseAutoBindMiddleware {
 
 		next();
 	}
+
+	// permission chung he thong: user -> role_user -> role -> role_permission -> permission
+	/**
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 *
+	 * Đầu vào
+	 * Thông tin user
+	 * Permission cần
+	 *
+	 * Logic
+	 * Lấy danh sách permission của user từ database (userId)
+	 * Kiểm tra permission cần cho API nó có trong permission của user hay không
+	 *
+	 * Đầu ra
+	 * Có, next()
+	 * Không, throw error
+	 */
+	verifyPermission(permission: string) {
+		return async (req: Request, res: Response, next: NextFunction) => {
+			const user = req.user as UserInformationDto;
+			permission;
+
+			// Lấy danh sách permission của user
+			// tao 1 ham trong permission query thong qua role_user
+			// hoac lay role truoc roi moi lay permission
+
+			next();
+		};
+	}
+
+	//verify role cua project: user -> project_member -> role -> role_permission -> permission
 }
 
 export default new AuthMiddleware();
